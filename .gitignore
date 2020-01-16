@@ -1,0 +1,17 @@
+# dependencies
+/node_modules
+
+#misc
+/.idea
+/.idea/workspace.xml
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# testing
+/coverage
+
+# production
+/build
+
