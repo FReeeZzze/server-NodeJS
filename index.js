@@ -4,7 +4,6 @@ const Config = require("./config");
 const userRouter = require("./Routes/UserRouter");
 const homeRouter = require("./Routes/HomeRouter");
 
-
 const app = express();
 
 app.use("/users", userRouter);
@@ -17,9 +16,6 @@ async function MainApp () {
             app.listen(Config.PORT, function(){
                 console.log("Сервер подключен на порте: " + Config.PORT);
             });
-        });
-        app.get("/", function (request, response) {
-            response.send("Главная страница");
         });
         app.use(function (req, res, next) {
             res.status(404).send("Not Found")
