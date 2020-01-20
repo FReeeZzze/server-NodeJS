@@ -1,11 +1,14 @@
 const express = require('express');
-const Config = require("./config");
-const Users = require("./Routes/Users");
 const mongoose = require("mongoose");
+const Config = require("./config");
+const userRouter = require("./Routes/UserRouter");
+const homeRouter = require("./Routes/HomeRouter");
+
 
 const app = express();
 
-app.use("/users", Users);
+app.use("/users", userRouter);
+app.use("/", homeRouter);
 
 async function MainApp () {
     try{
