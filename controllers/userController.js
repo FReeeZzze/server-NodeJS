@@ -1,6 +1,6 @@
 const User = require("../Schemes/userSchema.js");
 
-exports.addUser = function (req, res) {
+exports.addUser = (req, res) => {
 
     if (!req.body) return res.sendStatus(400);
 
@@ -8,36 +8,36 @@ exports.addUser = function (req, res) {
     const userAge = req.body.age;
     const user = new User({name: userName, age: userAge});
 
-    user.save(function (err) {
+    user.save( (err) => {
         if (err) return console.log(err);
         res.send(user);
     });
     res.redirect("/users");
 };
 
-exports.getUsers = function(req, res) {
+exports.getUsers = (req, res) => {
 
-    User.find({}, function (err, users) {
+    User.find({}, (err, users) => {
 
         if (err) return console.log(err);
         res.send(users)
     });
 };
 
-exports.findUser = function(req, res){
+exports.findUser = (req, res) => {
 
     const id = req.params.id;
-    User.findOne({_id: id}, function(err, user){
+    User.findOne({_id: id}, (err, user) => {
 
         if(err) return console.log(err);
         res.send(user);
     });
 };
 
-exports.deleteUser = function(req, res){
+exports.deleteUser = (req, res) =>{
 
     const id = req.params.id;
-    User.findByIdAndDelete(id, function(err, user){
+    User.findByIdAndDelete(id, (err, user) => {
 
         if(err) return console.log(err);
         res.send(user);
@@ -45,7 +45,7 @@ exports.deleteUser = function(req, res){
     res.redirect("/users");
 };
 
-exports.editUser = function(req, res){
+exports.editUser = (req, res) => {
 
     if(!req.body) return res.sendStatus(400);
     const id = req.body.id;
@@ -53,7 +53,7 @@ exports.editUser = function(req, res){
     const userAge = req.body.age;
     const newUser = {age: userAge, name: userName};
 
-    User.findOneAndUpdate({_id: id}, newUser, {new: true}, function(err, user){
+    User.findOneAndUpdate({_id: id}, newUser, {new: true}, (err, user) => {
         if(err) return console.log(err);
         res.send(user);
     });
