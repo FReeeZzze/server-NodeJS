@@ -4,9 +4,16 @@ exports.addUser = (req, res) => {
 
     if (!req.body) return res.sendStatus(400);
 
-    const userName = req.body.name;
-    const userAge = req.body.age;
-    const user = new User({name: userName, age: userAge});
+    const userFirstName = req.body.firstName;
+    const userLastName = req.body.lastName;
+    const userPassword = req.body.password;
+    const user = new User({
+        name: {
+            firstName: userFirstName,
+            lastName: userLastName
+        },
+        password: userPassword
+    });
 
     user.save( (err) => {
         if (err) return console.log(err);
@@ -49,9 +56,16 @@ exports.editUser = (req, res) => {
 
     if(!req.body) return res.sendStatus(400);
     const id = req.body.id;
-    const userName = req.body.name;
-    const userAge = req.body.age;
-    const newUser = {age: userAge, name: userName};
+    const userFirstName = req.body.firstName;
+    const userLastName = req.body.lastName;
+    const userPassword = req.body.password;
+    const newUser = {
+        name: {
+            firstName: userFirstName,
+            lastName: userLastName
+        },
+        password: userPassword
+    };
 
     User.findOneAndUpdate({_id: id}, newUser, {new: true}, (err, user) => {
         if(err) return console.log(err);

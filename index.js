@@ -9,7 +9,7 @@ const app = express();
 app.use("/users", userRouter);
 app.use("/", homeRouter);
 
-async function MainApp () {
+const MainApp = async() =>{
     try{
         await mongoose.connect("mongodb://localhost:27017/" + `${Config.dbName}`, { useNewUrlParser: true, useUnifiedTopology: true }, (err) => {
             if(err) return console.log(err);
@@ -26,4 +26,4 @@ async function MainApp () {
     }
 };
 
-MainApp();
+MainApp().then(r => r);
