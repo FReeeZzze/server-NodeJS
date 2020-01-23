@@ -15,41 +15,37 @@ exports.addUser = (req, res) => {
         password: userPassword
     });
 
-    user.save( (err) => {
-        if (err) return console.log(err);
-        res.send(user);
+    User.addUser(user, (err, user) => {
+        if(err) return console.log(err);
+        res.json(user);
     });
-    res.redirect("/users");
 };
 
 exports.getUsers = (req, res) => {
 
-    User.find({}, (err, users) => {
-
-        if (err) return console.log(err);
-        res.send(users)
+    User.getUsers((err, users) => {
+        if(err) return console.log(err);
+        res.json(users);
     });
 };
 
 exports.findUser = (req, res) => {
 
     const id = req.params.id;
-    User.findOne({_id: id}, (err, user) => {
-
+    User.getUserById(id, (err, user) => {
         if(err) return console.log(err);
-        res.send(user);
+        res.json(user);
     });
 };
 
 exports.deleteUser = (req, res) =>{
 
     const id = req.params.id;
-    User.findByIdAndDelete(id, (err, user) => {
+    User.deleteUser(id, (err, user) => {
 
         if(err) return console.log(err);
         res.send(user);
     });
-    res.redirect("/users");
 };
 
 exports.editUser = (req, res) => {
@@ -60,14 +56,12 @@ exports.editUser = (req, res) => {
     const userLastName = req.body.lastName;
     const userPassword = req.body.password;
     const newUser = {
-        name: {
-            firstName: userFirstName,
-            lastName: userLastName
-        },
+        firstName: userFirstName,
+        lastName: userLastName,
         password: userPassword
     };
 
-    User.findOneAndUpdate({_id: id}, newUser, {new: true}, (err, user) => {
+    User.updateUser(id, newUser, {new: true, useFindAndModify: false}, (err, user) => {
         if(err) return console.log(err);
         res.send(user);
     });

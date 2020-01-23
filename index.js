@@ -1,17 +1,19 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const mongoose = require("mongoose");
 const Config = require("./config");
 const userRouter = require("./Routes/UserRouter");
 const homeRouter = require("./Routes/HomeRouter");
 
 const app = express();
-
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/users", userRouter);
 app.use("/", homeRouter);
 
 const MainApp = async() =>{
     try{
-        await mongoose.connect("mongodb://localhost:27017/" + `${Config.dbName}`, { useNewUrlParser: true, useUnifiedTopology: true }, (err) => {
+        await mongoose.connect(`mongodb://localhost:27017/${Config.dbName}`, { useNewUrlParser: true, useUnifiedTopology: true }, (err) => {
             if(err) return console.log(err);
             console.log("Подключен к базе Mongodb: " + `${Config.dbName}`);
             app.listen(Config.PORT, () => {
