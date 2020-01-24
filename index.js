@@ -1,10 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require("mongoose");
+
+// Настройки
 const Config = require("./Config/config");
+
+// Роуты
 const userRouter = require("./Routes/UserRouter");
 const homeRouter = require("./Routes/HomeRouter");
 
+// Приложение
 const app = express();
 
 app.use(Config.toClient);
