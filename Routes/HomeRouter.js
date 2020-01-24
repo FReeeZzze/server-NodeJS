@@ -7,6 +7,7 @@ const homeRouter = express.Router(); // для адресов с "/"
 
 //get запросы
 homeRouter.get("/",homeController.index);
+homeRouter.get('/download', homeController.download);
 
 //post запросы
 homeRouter.post("/upload", type, homeController.upload);

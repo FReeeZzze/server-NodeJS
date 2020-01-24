@@ -1,5 +1,11 @@
 exports.index = (req, res) => {
-    response.send("Главная страница");
+    res.send("Главная страница");
+};
+
+exports.download = (req, res) => {
+    const link = "VKRNikolayCherney2.docx";
+    const file = __dirname + `/../uploads/${link}`;
+    res.download(file);
 };
 
 exports.upload = (req, res, next) => {

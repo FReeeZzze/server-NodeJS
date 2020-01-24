@@ -12,7 +12,7 @@ const homeRouter = require("./Routes/HomeRouter");
 // Приложение
 const app = express();
 
-app.use(Config.toClient);
+app.use(Config.header);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/users", userRouter);
