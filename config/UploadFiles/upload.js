@@ -1,14 +1,25 @@
 const multer = require("multer");
 const fs = require('fs');
 let filename = null;
-const storageConfig = multer.diskStorage({
-    destination: (req, file, cb) =>{
-        filename = file.fieldname + '-' + Date.now();
-        fs.mkdir(`uploads/items/${filename}`, {recursive: false}, (err) => {
+const rootDir = 'uploads/items';
+
+const createDestination = (req, file, cb) => {
+    filename = file.fieldname + '-' + Date.now();
+    fs.mkdir(`${rootDir}/${filename}`, {recursive: false}, (err) => {
+        if(err) throw err;
+    });
+    if (file.mimetype === ('image/jpeg' || 'image/png')) {
+        fs.mkdir(`${rootDir}/${filename}/images`, {recursive: false}, (err) => {
             if(err) throw err;
         });
-        cb(null, `uploads/items/${filename}`);
-    },
+        cb(null, `${rootDir}/${filename}/images`);
+    } else {
+        cb(null, `${rootDir}/${filename}`);
+    }
+};
+
+const storageConfig = multer.diskStorage({
+    destination: createDestination,
     filename: (req, file, cb) =>{
         cb(null, filename);
     }
@@ -25,7 +36,7 @@ const fileFilter = (req, file, cb) => {
         cb(null, false);
     }
 };
-
-const upload = multer({storage: storageConfig, fileFilter: fileFilter});
+// , fileFilter: fileFilter
+const upload = multer({storage: storageConfig});
 
 module.exports = upload;
