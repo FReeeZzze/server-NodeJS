@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const authorSchema = new Schema({
+const author = new Schema({
     _id: mongoose.Schema.Types.ObjectId,
     name: {
         firstName: {
@@ -18,4 +18,4 @@ const authorSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model("Author", authorSchema);
+module.exports = mongoose.model("Author", author);

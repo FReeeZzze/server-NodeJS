@@ -3,19 +3,22 @@ exports.index = (req, res) => {
 };
 
 exports.download = (req, res) => {
-    const link = "VKRNikolayCherney2.docx";
-    const file = __dirname + `/../uploads/${link}`;
+    const path = req.link;
+    const file = __dirname + `/../${path}`;
     console.log(file);
     res.download(file);
 };
 
-exports.upload = (req, res, next) => {
-    if (req.file === null) return res.status(400).json({ msg: 'Файл не загружен' });
-    let filedata = req.file;
-    console.log(filedata);
-    let path = __dirname + '/../' + filedata.path;
+exports.addItem = (req, res, next) => {
+    if (!(req.body && req.file)) return res.sendStatus(400);
+    const filedata = req.file;
+    console.log("Файл", filedata);
+    const ext = filedata.originalname.split('.').pop();
+    console.log("Формат: ",ext);
+    let title = '';
+    let link = req.file.path;
     if(!filedata)
         res.send("Ошибка при загрузке файла");
     else
-        res.send("Файл загружен и находиться по адресу: " + path);
+        res.send("Файл загружен");
 };

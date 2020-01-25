@@ -3,11 +3,11 @@ const bodyParser = require('body-parser');
 const mongoose = require("mongoose");
 
 // Настройки
-const Config = require("./Config/config");
+const Config = require("./config/config");
 
 // Роуты
-const userRouter = require("./Routes/UserRouter");
-const homeRouter = require("./Routes/HomeRouter");
+const userRouter = require("./routes/UserRouter");
+const homeRouter = require("./routes/HomeRouter");
 
 // Приложение
 const app = express();

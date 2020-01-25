@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
+const user = new Schema({
     name: {
         firstName: {
             type: String,
@@ -19,7 +19,7 @@ const userSchema = new Schema({
     }
 });
 
-const User = module.exports = mongoose.model("User", userSchema);
+const User = module.exports = mongoose.model("User", user);
 
 module.exports.getUsers = (callback, limit) => {
     User.find(callback).limit(limit);

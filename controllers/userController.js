@@ -1,4 +1,4 @@
-const User = require("../Schemes/userSchema.js");
+const User = require("../models/users/user.js");
 
 exports.addUser = (req, res) => {
 
