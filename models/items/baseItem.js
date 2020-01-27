@@ -1,14 +1,13 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const baseMaterialSchema = new Schema({
-    _id: mongoose.Schema.Types.ObjectId,
+const baseMaterial = new Schema({
     title: String,
     description: String,
     language: String, // Сделать отдельную модель в будущем
     viewsCount: Number,
     size: Number,
-    filename: String,
+    link: String,
     extensions: String,
     authors: {
         type: String,
@@ -36,4 +35,5 @@ const baseMaterialSchema = new Schema({
     },
 });
 
-module.exports = mongoose.model("Material", baseMaterialSchema);
+module.exports.schema = baseMaterial;
+module.exports.model = mongoose.model("Base", baseMaterial);
