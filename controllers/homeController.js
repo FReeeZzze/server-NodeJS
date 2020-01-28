@@ -14,15 +14,17 @@ exports.download = (req, res) => {
 
 exports.addItem = (req, res, next) => {
 
-    if (!(req.body && req.file)) return res.sendStatus(400);
-    const filedata = req.file;
-    if(!filedata)
+    if (!(req.body && req.file)) return res.status(404).send("Not Found");
+
+    const fileData = req.file;
+
+    if(!fileData)
         res.send("Ошибка при загрузке файла");
     else
         res.send("Файл загружен");
 
-    console.log("Файл", filedata);
-    const ext = filedata.originalname.split('.').pop();
+    console.log("Файл", fileData);
+    const ext = fileData.originalname.split('.').pop();
     console.log("Формат: ",ext);
 
     //for all
@@ -70,7 +72,7 @@ exports.addItem = (req, res, next) => {
     });
 };
 
-exports.getItems = (req, res) => {
+module.exports.getItems = (req, res) => {
 
     const item = req.params.item;
     if(item === 'books'){
@@ -79,7 +81,7 @@ exports.getItems = (req, res) => {
             res.json(books);
         });
     }else {
-        res.status(404).send("Not Found")
+        res.status(404).send("Not Found");
     }
 };
 
@@ -97,7 +99,7 @@ exports.getItemsById = (req,res) => {
     }
 };
 
-exports.deleteItem = (req, res) =>{
+exports.deleteItem = (req, res) => {
 
     const item = req.params.item;
     const id = req.params.id;
@@ -113,5 +115,32 @@ exports.deleteItem = (req, res) =>{
         });
     }else {
         res.status(404).send("Not Found")
+    }
+};
+
+exports.editItem = (req, res) => {
+
+    if(!(req.item && (req.body && req.file))) return res.status(404).send("Not Found");
+
+    const fileData = req.file;
+
+    if(!fileData)
+        res.send("Ошибка при загрузке файла");
+    else
+        res.send("Файл загружен");
+
+    //base
+    const item = req.params.item;
+    const id = req.body.id;
+    const title = req.body.title;
+    const description = req.body.description;
+    const language = req.body.language;
+    const viewsCount = req.body.viewsCount;
+    const size = req.file.size;
+    const link = req.file.path;
+    const extensions = '';
+    const authors = '';
+    if(item === 'books'){
+
     }
 };
