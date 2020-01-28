@@ -60,3 +60,30 @@ module.exports.deleteBook = (id, callback) => {
     let query = {_id: id};
     Book.deleteOne(query, callback);
 };
+
+module.exports.updateBook = (id, book, options, callback) => {
+    let query = {_id: id};
+    let update = {
+        title: book.title,
+        description: book.description,
+        language: book.language,
+        viewsCount: book.viewsCount,
+        size: book.size,
+        link: book.link,
+        extensions: book.extensions,
+        authors: book.authors,
+        publishing_house: book.publishing_house,
+        identification: {
+            ISBN: book.ISBN,
+            UDK: book.UDK,
+            BBK: book.BBK,
+        },
+        about: {
+            content: book.content,
+            references: book.references,
+            annotation: book.annotation
+        }
+    };
+    console.log("Update", update, "id: ", id);
+    Book.findOneAndUpdate(query, update, options, callback);
+};

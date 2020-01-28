@@ -26,7 +26,6 @@ const baseMaterial = new Schema({
     dates: {
         created: {
             type: Date,
-            default: Date.now,
         },
         update: {
             type: Date,
