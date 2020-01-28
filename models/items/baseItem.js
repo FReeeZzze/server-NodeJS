@@ -23,16 +23,7 @@ const baseMaterial = new Schema({
             }
         }
     ],
-    dates: {
-        created: {
-            type: Date,
-        },
-        update: {
-            type: Date,
-            default: Date.now
-        }
-    },
-});
+}, {timestamps: true});
 
 module.exports.schema = baseMaterial;
 module.exports.model = mongoose.model("Base", baseMaterial);

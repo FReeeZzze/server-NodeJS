@@ -2,17 +2,15 @@ const User = require("../models/users/user.js");
 
 exports.addUser = (req, res) => {
 
-    if (!req.body) return res.sendStatus(400);
+    if (!req.body) return res.status(204).send("No Content");
 
-    const userFirstName = req.body.firstName;
-    const userLastName = req.body.lastName;
-    const userPassword = req.body.password;
+    const name = req.body.name;
+    const email = req.body.email;
+    const password = req.body.password;
     const user = new User({
-        name: {
-            firstName: userFirstName,
-            lastName: userLastName
-        },
-        password: userPassword
+        name: name,
+        email: email,
+        password: password
     });
 
     User.addUser(user, (err, user) => {
@@ -32,6 +30,7 @@ exports.getUsers = (req, res) => {
 exports.findUser = (req, res) => {
 
     const id = req.params.id;
+    if(!id) return res.status(400).send("Not Found user");
     User.getUserById(id, (err, user) => {
         if(err) return console.log(err);
         res.json(user);
@@ -41,6 +40,7 @@ exports.findUser = (req, res) => {
 exports.deleteUser = (req, res) =>{
 
     const id = req.params.id;
+    if(!id) return res.status(400).send("Not Found user");
     User.deleteUser(id, (err, user) => {
 
         if(err) return console.log(err);
@@ -50,18 +50,18 @@ exports.deleteUser = (req, res) =>{
 
 exports.editUser = (req, res) => {
 
-    if(!req.body) return res.sendStatus(400);
+    if(!req.body) return res.status(204).send("No Content");
     const id = req.body.id;
-    const userFirstName = req.body.firstName;
-    const userLastName = req.body.lastName;
-    const userPassword = req.body.password;
-    const newUser = {
-        firstName: userFirstName,
-        lastName: userLastName,
-        password: userPassword
+    const name = req.body.name;
+    const email = req.body.email;
+    const password = req.body.password;
+    const updateUser = {
+        name: name,
+        email: email,
+        password: password
     };
 
-    User.updateUser(id, newUser, {new: true, useFindAndModify: false}, (err, user) => {
+    User.updateUser(id, updateUser, {new: true, useFindAndModify: false}, (err, user) => {
         if(err) return console.log(err);
         res.send(user);
     });

@@ -6,7 +6,7 @@ exports.index = (req, res) => {
     res.send("Главная страница");
 };
 
-exports.download = (req, res) => {
+exports.download = (req, res, next) => {
     const path = req.params.link;
     const file = __dirname + `/../${path}`;
     console.log(file);
@@ -115,7 +115,7 @@ exports.getItems = (req, res) => {
     }
 };
 
-exports.getItemsById = (req,res) => {
+exports.getItemsById = (req, res) => {
 
     const item = req.params.item;
     const id = req.params.id;
@@ -229,6 +229,7 @@ exports.editItem = (req, res) => {
             });
             Book.updateBook(id, newBook, {new: true, useFindAndModify: false}, (err, book) => {
                 if(err) return console.log(err);
+                book.markModified('update');
                 res.send(book);
             });
             break;
