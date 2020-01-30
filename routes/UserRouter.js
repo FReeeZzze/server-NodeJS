@@ -5,7 +5,7 @@ const userRouter = express.Router();  // для адресов с "/users"
 //get запросы
 userRouter.get("/",userController.getUsers);
 
-userRouter.get("/:id", userController.findUser);
+userRouter.get("/id/:id", userController.findUser);
 
 //post запросы
 userRouter.post("/", userController.addUser);

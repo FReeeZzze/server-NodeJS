@@ -1,16 +1,33 @@
+const mongoose = require('mongoose');
 const Book = require("../models/items/book.js");
 const removeFiles = require("../config/Methods/methods");
 const types = require("../config/Types/types");
+const logger = require('winston');
 
 exports.index = (req, res) => {
     res.send("Главная страница");
 };
 
 exports.download = (req, res, next) => {
-    const path = req.params.link;
+    const path = req.body.link;
     const file = __dirname + `/../${path}`;
     console.log(file);
     res.download(file);
+    // res.download(file);
+    // const sendFileOptions = {
+    //     headers: {
+    //         'X-Content-Type-Options': 'nosniff',
+    //         'Content-Type'          : 'image/jpeg',
+    //     },
+    // };
+    // res.status(200).sendFile(file, sendFileOptions, (error) => {
+    //     if (error) {
+    //         logger.error(error);
+    //         res.status(404).send("Not found");
+    //     }else {
+    //         res.download(file);
+    //     }
+    // });
 };
 
 exports.addItem = (req, res) => {
@@ -119,7 +136,7 @@ exports.getItemsById = (req, res) => {
 
     const item = req.params.item;
     const id = req.params.id;
-    if(!(item  && id)) return res.status(404).send("Not Found");
+    if(!item || mongoose.Types.ObjectId.isValid(id) === false) return res.status(404).send("Not Found");
     switch(item) {
         case types.books: {
             Book.getBookById(id, (err, book) => {
@@ -144,18 +161,27 @@ exports.deleteItem = (req, res) => {
 
     const item = req.params.item;
     const id = req.params.id;
-    if(!(item && id)) return res.status(404).send("Not Found");
+    let check = false;
+    if(!item || mongoose.Types.ObjectId.isValid(id) === false) return res.status(404).send("Not Found");
     switch(item) {
         case types.books: {
             Book.getBookById(id, (err,book) => {
                 if(err) return console.log(err);
-                removeFiles(book.link);
+                if(book === null) {
+                    check = false;
+                    res.status(404).send("Not Found");
+                }else {
+                    check = true;
+                    removeFiles(book.link);
+                }
             });
-            Book.deleteBook(id, (err, book) => {
-                if(err) return console.log(err);
-                res.json(book);
-                console.log('delete from database');
-            });
+            if(check) {
+                Book.deleteBook(id, (err, book) => {
+                    if(err) return console.log(err);
+                    res.json(book);
+                    console.log('delete from database');
+                });
+            }
             break;
         }
         case types.audio: {

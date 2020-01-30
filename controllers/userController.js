@@ -1,13 +1,16 @@
+const mongoose = require('mongoose');
 const User = require("../models/users/user.js");
 
 exports.addUser = (req, res) => {
 
     if (!req.body) return res.status(204).send("No Content");
 
+    const username = req.body.username;
     const name = req.body.name;
     const email = req.body.email;
     const password = req.body.password;
     const user = new User({
+        username: username,
         name: name,
         email: email,
         password: password
@@ -30,6 +33,7 @@ exports.getUsers = (req, res) => {
 exports.findUser = (req, res) => {
 
     const id = req.params.id;
+    if(mongoose.Types.ObjectId.isValid(id) === false) return res.status(404).send("Not Found");
     if(!id) return res.status(400).send("Not Found user");
     User.getUserById(id, (err, user) => {
         if(err) return console.log(err);
@@ -40,9 +44,9 @@ exports.findUser = (req, res) => {
 exports.deleteUser = (req, res) =>{
 
     const id = req.params.id;
+    if(mongoose.Types.ObjectId.isValid(id) === false) return res.status(404).send("Not Found");
     if(!id) return res.status(400).send("Not Found user");
     User.deleteUser(id, (err, user) => {
-
         if(err) return console.log(err);
         res.send(user);
     });
