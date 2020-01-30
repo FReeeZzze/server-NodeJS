@@ -7,4 +7,6 @@ const removeFiles = (params) => {
     });
 };
 
-module.exports = removeFiles;
+module.exports = {
+    removeFiles
+};

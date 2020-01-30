@@ -23,7 +23,7 @@ const baseMaterial = new Schema({
             }
         }
     ],
-}, {timestamps: true});
+});
 
 module.exports.schema = baseMaterial;
 module.exports.model = mongoose.model("Base", baseMaterial);

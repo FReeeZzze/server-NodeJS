@@ -1,30 +1,35 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongoose = require("mongoose");
-
+const mongoose = require('mongoose');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
 // Настройки
-const Config = require("./config/config");
+const config = require("./config/config");
+const passportManager = require("./config/Passport/passport");
 
 // Роуты
-const userRouter = require("./routes/UserRouter");
-const homeRouter = require("./routes/HomeRouter");
+const router = require ('./routes');
 
 // Приложение
 const app = express();
 
-app.use(Config.header);
+app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use("/users", userRouter);
-app.use("/", homeRouter);
+app.use(cookieParser());
+
+app.use('/', router);
+
+app.use(config.header);
+app.use(passportManager.initialize());
 
 const MainApp = async() =>{
     try{
-        await mongoose.connect(`mongodb://localhost:27017/${Config.dbName}`, { useNewUrlParser: true, useUnifiedTopology: true }, (err) => {
+        await mongoose.connect(`mongodb://localhost:27017/${config.dbName}`, { useNewUrlParser: true, useUnifiedTopology: true }, (err) => {
             if(err) return console.log(err);
-            console.log("Подключен к базе Mongodb: " + `${Config.dbName}`);
-            app.listen(Config.PORT, () => {
-                console.log("Сервер стартовал на порте: " + Config.PORT);
+            console.log("Подключен к базе Mongodb: " + `${config.dbName}`);
+            app.listen(config.PORT, () => {
+                console.log("Сервер стартовал на порте: " + config.PORT);
             });
         });
         app.use((req, res, next) => {

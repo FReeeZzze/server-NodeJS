@@ -30,7 +30,7 @@ exports.addItem = (req, res) => {
 
     //for all
     const extensions = fileData.originalname.split('.').pop();
-    let title = 'Book New2';
+    let title = 'Book New3';
     let link = req.file.path;
     let description = "#ffffff";
     let language = "ru";
@@ -75,7 +75,7 @@ exports.addItem = (req, res) => {
             });
             book.save().then((err, book) => {
                 if(err) return console.log(err);
-                res.json(book);
+                res.json("added book: ",book);
             });
             break;
         }
@@ -185,7 +185,7 @@ exports.editItem = (req, res) => {
 
     console.log("Файл", fileData);
     //for all
-    let id = '5e2f323d1db6bb1ab0139b77';
+    let id = '5e30ad419ef4072a1c10191a';
     let extensions = fileData.originalname.split('.').pop();
     let title = 'Book Update 2';
     let link = req.file.path;

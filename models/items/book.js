@@ -26,7 +26,7 @@ const bookSchema = extendSchema(baseMaterial.schema,{
             type: String,
         }
     },
-});
+}, {timestamps: true});
 
 bookSchema.method({
     getISBN: function (cb) {

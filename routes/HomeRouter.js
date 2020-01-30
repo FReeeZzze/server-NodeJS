@@ -7,7 +7,7 @@ const homeRouter = express.Router(); // для адресов с "/"
 
 //get запросы
 homeRouter.get("/",homeController.index);
-homeRouter.get("/:item", homeController.getItems);
+homeRouter.get("/items/:item", homeController.getItems);
 homeRouter.get('/download', homeController.download);
 homeRouter.get("/:item/:id", homeController.getItemsById);
 
