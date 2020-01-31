@@ -1,5 +1,5 @@
-const header = require('./Header/header');
-const upload = require('./UploadFiles/upload');
+const header = require('./Header');
+const upload = require('./UploadFiles');
 
 //Общие настройки
 module.exports = {

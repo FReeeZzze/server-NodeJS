@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const Book = require("../models/items/book.js");
-const {removeFiles, downloadFiles} = require("../config/Methods/methods");
-const types = require("../config/Types/types");
+const {removeFiles, downloadFiles} = require("../config/Methods");
+const {addBook} = require("../config/Methods/books");
+const types = require("../config/Types");
+const {editBook} = require("../config/Methods/books");
 
 exports.index = (req, res) => {
     res.send("Главная страница");
@@ -30,51 +32,20 @@ exports.addItem = (req, res) => {
     console.log("Загруженный Файл", fileData);
 
     //for all
-    let extensions = fileData.originalname.split('.').pop();
-    let title = req.body.title;
-    let link = req.file.path;
-    let description = req.body.description;
-    let language = req.body.language;
-    let viewsCount = req.body.viewsCount;
-    let size = req.file.size;
-    let authors = req.body.authors;
-
+    let base = {
+        extensions: fileData.originalname.split('.').pop(),
+        title: req.body.title,
+        link: req.file.path,
+        description: req.body.description,
+        language: req.body.language,
+        viewsCount: req.body.viewsCount,
+        size: req.file.size,
+        authors: req.body.authors
+    };
     switch(item) {
         case types.books: {
             //book
-            let content = req.body.content;
-            let references = req.body.references;
-            let annotation = req.body.annotation;
-            let publishing_house = req.body.publishing_house;
-            let ISBN = req.body.ISBN;
-            let UDK = req.body.UDK;
-            let BBK = req.body.BBK;
-            const book = new Book({
-                publishing_house: publishing_house,
-                identification: {
-                    ISBN: ISBN,
-                    UDK: UDK,
-                    BBK: BBK
-                },
-                about: {
-                    content: content,
-                    references: references,
-                    annotation: annotation
-                },
-                title: title,
-                description: description,
-                language: language,
-                viewsCount: viewsCount,
-                size: size,
-                link: link,
-                extensions: extensions,
-                authors: authors,
-                dates: {
-                    created: Date.now()
-                }
-            });
-            book.save();
-            res.send(book);
+            addBook(req, res, base);
             break;
         }
         case types.audio:  {
@@ -192,53 +163,21 @@ exports.editItem = (req, res) => {
     console.log("Файл", fileData);
 
     //for all
-    let id = req.body.id;
-    let extensions = fileData.originalname.split('.').pop();
-    let title = req.body.title;
-    let link = req.file.path;
-    let description = req.body.description;
-    let language = req.body.language;
-    let viewsCount = req.body.viewsCount;
-    let size = req.file.size;
-    let authors = req.body.authors;
-
+    let base = {
+        id: req.body.id,
+        extensions: fileData.originalname.split('.').pop(),
+        title: req.body.title,
+        link: req.file.path,
+        description: req.body.description,
+        language: req.body.language,
+        viewsCount: req.body.viewsCount,
+        size: req.file.size,
+        authors: req.body.authors
+    };
 
     switch(item) {
         case types.books: {
-            //book
-            let content = req.body.content;
-            let references = req.body.references;
-            let annotation = req.body.annotation;
-            let publishing_house = req.body.publishing_house;
-            let ISBN = req.body.ISBN;
-            let UDK = req.body.UDK;
-            let BBK = req.body.BBK;
-            const newBook = {
-                title: title,
-                description: description,
-                language: language,
-                viewsCount: viewsCount,
-                size: size,
-                link: link,
-                extensions: extensions,
-                authors: authors,
-                publishing_house : publishing_house,
-                ISBN : ISBN,
-                UDK : UDK,
-                BBK: BBK,
-                content : content,
-                references : references,
-                annotation : annotation
-            };
-            Book.getBookById(id, (err,book) => {
-                if(err) return console.log(err);
-                removeFiles(book.link);
-            });
-            Book.updateBook(id, newBook, {new: true, useFindAndModify: false}, (err, book) => {
-                if(err) return console.log(err);
-                book.markModified('update');
-                res.send(book);
-            });
+            editBook(req, res, base);
             break;
         }
         case types.audio: {
