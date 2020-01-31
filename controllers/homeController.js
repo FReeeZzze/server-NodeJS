@@ -35,37 +35,35 @@ exports.addItem = (req, res) => {
     const item = req.params.item;
     const fileData = req.file;
 
-    if (!(req.body && fileData)) return res.status(204).send("No Content");
+    if (!(req.body && fileData)) return res.send("No Content");
     if(!(item === types.books || item === types.audio || item === types.video)) {
         const path = req.file.path;
         const file = __dirname + `/../${path}`;
         removeFiles(file);
-        return res.status(404).send("Not Found");
     }
 
     console.log("Загруженный Файл", fileData);
 
     //for all
-    const extensions = fileData.originalname.split('.').pop();
-    let title = 'Book New3';
+    let extensions = fileData.originalname.split('.').pop();
+    let title = req.body.title;
     let link = req.file.path;
-    let description = "#ffffff";
-    let language = "ru";
-    let viewsCount = 1;
+    let description = req.body.description;
+    let language = req.body.language;
+    let viewsCount = req.body.viewsCount;
     let size = req.file.size;
-    let authors = 'Auth2';
-
-    //book
-    let content = '';
-    let references = '';
-    let annotation = '';
-    let publishing_house = '';
-    let ISBN = "222-333-444";
-    let UDK = "2222-2222-2222";
-    let BBK = "12-12-12-333-333";
+    let authors = req.body.authors;
 
     switch(item) {
         case types.books: {
+            //book
+            let content = req.body.content;
+            let references = req.body.references;
+            let annotation = req.body.annotation;
+            let publishing_house = req.body.publishing_house;
+            let ISBN = req.body.ISBN;
+            let UDK = req.body.UDK;
+            let BBK = req.body.BBK;
             const book = new Book({
                 publishing_house: publishing_house,
                 identification: {
@@ -104,14 +102,13 @@ exports.addItem = (req, res) => {
             console.log(types.video);
             break;
         }
-        default: res.status(404).send("Not Found");
+        default: res.send("No item available");
     }
 };
 
 exports.getItems = (req, res) => {
 
     const item = req.params.item;
-    if(!item) return res.status(404).send("Not Found");
     switch(item) {
         case types.books: {
             Book.getBooks((err, books) => {
@@ -128,7 +125,7 @@ exports.getItems = (req, res) => {
             console.log(types.video);
             break;
         }
-        default: res.status(404).send("Not Found");
+        default: res.send("No item available");
     }
 };
 
@@ -136,7 +133,7 @@ exports.getItemsById = (req, res) => {
 
     const item = req.params.item;
     const id = req.params.id;
-    if(!item || mongoose.Types.ObjectId.isValid(id) === false) return res.status(404).send("Not Found");
+    if(mongoose.Types.ObjectId.isValid(id) === false) return res.send("Not valid ID");
     switch(item) {
         case types.books: {
             Book.getBookById(id, (err, book) => {
@@ -153,7 +150,7 @@ exports.getItemsById = (req, res) => {
             console.log(types.video);
             break;
         }
-        default: res.status(404).send("Not Found");
+        default: res.send("No item available");
     }
 };
 
@@ -162,14 +159,14 @@ exports.deleteItem = (req, res) => {
     const item = req.params.item;
     const id = req.params.id;
     let check = false;
-    if(!item || mongoose.Types.ObjectId.isValid(id) === false) return res.status(404).send("Not Found");
+    if(mongoose.Types.ObjectId.isValid(id) === false) return res.send("Not valid ID");
     switch(item) {
         case types.books: {
             Book.getBookById(id, (err,book) => {
                 if(err) return console.log(err);
                 if(book === null) {
                     check = false;
-                    res.status(404).send("Not Found");
+                    res.send("Not found this book");
                 }else {
                     check = true;
                     removeFiles(book.link);
@@ -192,7 +189,7 @@ exports.deleteItem = (req, res) => {
             console.log(types.video);
             break;
         }
-        default: res.status(404).send("Not Found");
+        default: res.send("No item available");
     }
 };
 
@@ -201,37 +198,38 @@ exports.editItem = (req, res) => {
     const item = req.params.item;
     const fileData = req.file;
 
-    if (!(req.body && fileData)) return res.status(204).send("No Content");
+    if (!(req.body && fileData)) return res.send("No Content");
     if(!(item === types.books || item === types.audio || item === types.video)) {
         const path = req.file.path;
         const file = __dirname + `/../${path}`;
         removeFiles(file);
-        return res.status(404).send("Not Found");
+        return res.send("No item available");
     }
 
     console.log("Файл", fileData);
-    //for all
-    let id = '5e30ad419ef4072a1c10191a';
-    let extensions = fileData.originalname.split('.').pop();
-    let title = 'Book Update 2';
-    let link = req.file.path;
-    let description = "123123";
-    let language = "en";
-    let viewsCount = 2;
-    let size = req.file.size;
-    let authors = 'author1';
 
-    //book
-    let content = 'a';
-    let references = 'b';
-    let annotation = 'c';
-    let publishing_house = 'd';
-    let ISBN = "111-111-111";
-    let UDK = "2222-2222-2222";
-    let BBK = "12-12-12-333-333";
+    //for all
+    let id = req.body.id;
+    let extensions = fileData.originalname.split('.').pop();
+    let title = req.body.title;
+    let link = req.file.path;
+    let description = req.body.description;
+    let language = req.body.language;
+    let viewsCount = req.body.viewsCount;
+    let size = req.file.size;
+    let authors = req.body.authors;
+
 
     switch(item) {
         case types.books: {
+            //book
+            let content = req.body.content;
+            let references = req.body.references;
+            let annotation = req.body.annotation;
+            let publishing_house = req.body.publishing_house;
+            let ISBN = req.body.ISBN;
+            let UDK = req.body.UDK;
+            let BBK = req.body.BBK;
             const newBook = {
                 title: title,
                 description: description,
@@ -268,6 +266,6 @@ exports.editItem = (req, res) => {
             console.log(types.video);
             break;
         }
-        default: res.status(404).send("Not Found");
+        default: res.send("No item available");
     }
 };

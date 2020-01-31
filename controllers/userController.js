@@ -33,7 +33,7 @@ exports.getUsers = (req, res) => {
 exports.findUser = (req, res) => {
 
     const id = req.params.id;
-    if(mongoose.Types.ObjectId.isValid(id) === false) return res.status(404).send("Not Found");
+    if(mongoose.Types.ObjectId.isValid(id) === false) return res.send("Not valid ID");
     if(!id) return res.status(400).send("Not Found user");
     User.getUserById(id, (err, user) => {
         if(err) return console.log(err);
@@ -44,7 +44,7 @@ exports.findUser = (req, res) => {
 exports.deleteUser = (req, res) =>{
 
     const id = req.params.id;
-    if(mongoose.Types.ObjectId.isValid(id) === false) return res.status(404).send("Not Found");
+    if(mongoose.Types.ObjectId.isValid(id) === false) return res.send("Not valid ID");
     if(!id) return res.status(400).send("Not Found user");
     User.deleteUser(id, (err, user) => {
         if(err) return console.log(err);
