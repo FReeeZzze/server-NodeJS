@@ -11,7 +11,6 @@ exports.index = (req, res) => {
 
 exports.test = (req, res) => {
     const Files = req.files;
-    console.log(Files);
     res.send(Files);
 };
 
