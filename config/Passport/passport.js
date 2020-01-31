@@ -1,13 +1,13 @@
 const passport = require('passport');
 const { Strategy, ExtractJwt } = require("passport-jwt");
 const User = require ('../../models/users/user');
-const config = require('../index');
+const {secret} = require('../index');
 
 class passportManager {
     initialize(){
-        var opts = {
+        let opts = {
             jwtFromRequest : ExtractJwt.fromAuthHeaderWithScheme("jwt"),
-            secretOrKey : config.secret
+            secretOrKey : secret
         };
         passport.use(new Strategy(opts, function(jwt_payload, done) {
             User.findOne({id: jwt_payload.id}, function(err, user) {

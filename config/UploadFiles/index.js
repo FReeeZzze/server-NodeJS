@@ -1,7 +1,9 @@
 const multer = require("multer");
 const fs = require('fs');
 const {pdf, png, jpeg, doc, docx, ppt} = require('../Types');
+const {createDir} = require('../Methods');
 let filename = null;
+let name_of_type = null;
 const rootDir = 'uploads/items';
 
 const createDestination = (req, file, cb) => {
@@ -10,20 +12,46 @@ const createDestination = (req, file, cb) => {
     fs.mkdir(`${rootDir}/${filename}`, {recursive: false}, (err) => {
         if(err) throw err;
     });
-    if (file.mimetype === (jpeg || png)) {
-        fs.mkdir(`${rootDir}/${filename}/images`, {recursive: false}, (err) => {
-            if(err) throw err;
-        });
-        cb(null, `${rootDir}/${filename}/images`);
-    } else {
-        cb(null, `${rootDir}/${filename}`);
+    switch(file.mimetype) {
+        case (jpeg): {
+            name_of_type = 'images';
+            createDir(rootDir,filename,name_of_type,cb);
+            break
+        }
+        case (png): {
+            name_of_type = 'images';
+            createDir(rootDir,filename,name_of_type,cb);
+            break
+        }
+        case (docx): {
+            name_of_type = 'docs';
+            createDir(rootDir,filename,name_of_type,cb);
+            break
+        }
+        case (doc): {
+            name_of_type = 'docs';
+            createDir(rootDir,filename,name_of_type,cb);
+            break;
+        }
+        case (ppt): {
+            name_of_type = 'ppt';
+            createDir(rootDir,filename,name_of_type,cb);
+            break;
+        }
+        case (pdf): {
+            name_of_type = 'pdf';
+            createDir(rootDir,filename,name_of_type,cb);
+            break;
+        }
+        default: cb(null, `${rootDir}/${filename}`);
     }
 };
 
 const storageConfig = multer.diskStorage({
     destination: createDestination,
     filename: (req, file, cb) =>{
-        cb(null, filename);
+        let ext = file.originalname.split('.').pop();
+        cb(null, filename + '.' + ext);
     }
 });
 

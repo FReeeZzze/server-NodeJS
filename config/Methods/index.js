@@ -24,4 +24,10 @@ exports.downloadFiles = (params, res) => {
         }
     });
 };
-// module.exports = removeFiles;
+
+exports.createDir = (rootDir, filename, name_of_type, cb) => {
+    fs.mkdir(`${rootDir}/${filename}/${name_of_type}`, {recursive: false}, (err) => {
+        if(err) throw err;
+    });
+    cb(null, `${rootDir}/${filename}/${name_of_type}`);
+};
