@@ -21,7 +21,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use('/', router);
-
+app.use(function (err, req, res, next) {
+    let error = err.message;
+    res.status(500);
+    res.send({ "error": error });
+});
 app.use(config.header);
 app.use(passportManager.initialize());
 
