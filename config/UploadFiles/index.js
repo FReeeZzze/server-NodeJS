@@ -1,14 +1,16 @@
 const multer = require("multer");
 const fs = require('fs');
+const {pdf, png, jpeg, doc, docx, ppt} = require('../Types');
 let filename = null;
 const rootDir = 'uploads/items';
 
 const createDestination = (req, file, cb) => {
-    filename = file.fieldname + '-' + Date.now();
+    const id = `f${(~~(Math.random()*1e8)).toString(16)}`;
+    filename = file.fieldname + '-' + Date.now() + id;
     fs.mkdir(`${rootDir}/${filename}`, {recursive: false}, (err) => {
         if(err) throw err;
     });
-    if (file.mimetype === ('image/jpeg' || 'image/png')) {
+    if (file.mimetype === (jpeg || png)) {
         fs.mkdir(`${rootDir}/${filename}/images`, {recursive: false}, (err) => {
             if(err) throw err;
         });
@@ -26,17 +28,19 @@ const storageConfig = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-    if(file.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-        file.mimetype === "application/pdf" ||
-        file.mimetype === "application/msword" ||
-        file.mimetype === 'application/vnd.openxmlformats-officedocument.presentationml.presentation'){
+    if( file.mimetype === pdf ||
+        file.mimetype === jpeg ||
+        file.mimetype === png ||
+        file.mimetype === doc ||
+        file.mimetype === docx ||
+        file.mimetype === ppt
+    ){
         cb(null, true);
     }
     else{
         cb(null, false);
     }
 };
-// , fileFilter: fileFilter
-const upload = multer({storage: storageConfig});
+const upload = multer({storage: storageConfig, fileFilter: fileFilter});
 
 module.exports = upload;

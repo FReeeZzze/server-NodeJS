@@ -3,7 +3,10 @@ const homeController = require("./../controllers/homeController.js");
 const Config = require("../config/config");
 
 const type = Config.upload.single("filedata");
+const multiType = Config.upload.array("filedata", 4);
 const homeRouter = express.Router(); // для адресов с "/"
+
+homeRouter.post('/test/upload', multiType, homeController.test);
 
 //get запросы
 homeRouter.get("/",homeController.index);
