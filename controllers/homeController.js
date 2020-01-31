@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const Book = require("../models/items/book.js");
 const removeFiles = require("../config/Methods/methods");
 const types = require("../config/Types/types");
-const logger = require('winston');
 
 exports.index = (req, res) => {
     res.send("Главная страница");
