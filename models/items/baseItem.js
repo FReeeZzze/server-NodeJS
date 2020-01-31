@@ -2,25 +2,34 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const baseMaterial = new Schema({
-    title: String,
-    description: String,
-    language: String, // Сделать отдельную модель в будущем
-    viewsCount: Number,
+    title: {
+        type: String,
+        default: 'none'
+    },
+    description: {
+        type:String,
+        default: 'none'
+    },
+    language: {
+        type:String,
+        default: 'ru'
+    }, // Сделать отдельную модель в будущем
+    viewsCount: {
+        type: Number,
+        default: 0
+    },
     size: Number,
     link: String,
     extensions: String,
     authors: {
         type: String,
+        default: 'Noname'
     },
     ratings: [
         {
             summary: String,
             detail: String,
             numberOfStars: Number,
-            created: {
-                type: Date,
-                default: Date.now
-            }
         }
     ],
 });

@@ -3,27 +3,36 @@ const baseMaterial = require('./baseItem');
 const extendSchema = require('mongoose-extend-schema');
 
 const bookSchema = extendSchema(baseMaterial.schema,{
-    publishing_house: String,
+    publishing_house: {
+        type: String,
+        default: 'none'
+    },
     identification: {
         ISBN: {
             type: String,
+            default: 'none'
         },
         UDK: {
             type: String,
+            default: 'none'
         },
         BBK: {
             type: String,
+            default: 'none'
         }
     },
     about: {
         content: {
             type: String,
+            default: 'none'
         },
         references: {
             type: String,
+            default: 'none'
         },
         annotation: {
             type: String,
+            default: 'none'
         }
     },
 }, {timestamps: true});

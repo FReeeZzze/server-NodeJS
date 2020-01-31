@@ -3,7 +3,7 @@ const User = require("../models/users/user.js");
 
 exports.addUser = (req, res) => {
 
-    if (!req.body) return res.status(204).send("No Content");
+    if (Object.keys(req.body).length === 0) return res.status(204).send("No Content");
 
     const username = req.body.username;
     const name = req.body.name;
@@ -54,7 +54,7 @@ exports.deleteUser = (req, res) =>{
 
 exports.editUser = (req, res) => {
 
-    if(!req.body) return res.status(204).send("No Content");
+    if(Object.keys(req.body).length === 0) return res.status(204).send("No Content");
     const id = req.body.id;
     const name = req.body.name;
     const email = req.body.email;

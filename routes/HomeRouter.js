@@ -18,5 +18,5 @@ homeRouter.post("/add/:item", type, homeController.addItem);
 homeRouter.put("/edit/:item", type, homeController.editItem);
 
 //delete запросы
-homeRouter.delete("/delete/:item/:id", homeController.deleteItem);
+homeRouter.delete("/delete/:item/id/:id", homeController.deleteItem);
 module.exports = homeRouter;

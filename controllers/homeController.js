@@ -35,7 +35,7 @@ exports.addItem = (req, res) => {
     const item = req.params.item;
     const fileData = req.file;
 
-    if (!(req.body && fileData)) return res.send("No Content");
+    if (Object.keys(req.body).length === 0 || !fileData) return res.send("No Content");
     if(!(item === types.books || item === types.audio || item === types.video)) {
         const path = req.file.path;
         const file = __dirname + `/../${path}`;
@@ -88,10 +88,8 @@ exports.addItem = (req, res) => {
                     created: Date.now()
                 }
             });
-            book.save().then((err, book) => {
-                if(err) return console.log(err);
-                res.json("added book: ",book);
-            });
+            book.save();
+            res.send(book);
             break;
         }
         case types.audio:  {
@@ -171,14 +169,14 @@ exports.deleteItem = (req, res) => {
                     check = true;
                     removeFiles(book.link);
                 }
+                if(check) {
+                    Book.deleteBook(id, (err, book) => {
+                        if(err) return console.log(err);
+                        res.json(book);
+                        console.log('delete from database');
+                    });
+                }
             });
-            if(check) {
-                Book.deleteBook(id, (err, book) => {
-                    if(err) return console.log(err);
-                    res.json(book);
-                    console.log('delete from database');
-                });
-            }
             break;
         }
         case types.audio: {
@@ -198,7 +196,7 @@ exports.editItem = (req, res) => {
     const item = req.params.item;
     const fileData = req.file;
 
-    if (!(req.body && fileData)) return res.send("No Content");
+    if (Object.keys(req.body).length === 0 || !fileData) return res.send("No Content");
     if(!(item === types.books || item === types.audio || item === types.video)) {
         const path = req.file.path;
         const file = __dirname + `/../${path}`;
