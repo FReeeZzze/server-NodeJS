@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Book = require("../models/items/book.js");
-const removeFiles = require("../config/Methods/methods");
+const {removeFiles, downloadFiles} = require("../config/Methods/methods");
 const types = require("../config/Types/types");
 
 exports.index = (req, res) => {
@@ -8,25 +8,11 @@ exports.index = (req, res) => {
 };
 
 exports.download = (req, res, next) => {
-    const path = req.body.link;
-    const file = __dirname + `/../${path}`;
-    console.log(file);
-    res.download(file);
-    // res.download(file);
-    // const sendFileOptions = {
-    //     headers: {
-    //         'X-Content-Type-Options': 'nosniff',
-    //         'Content-Type'          : 'image/jpeg',
-    //     },
-    // };
-    // res.status(200).sendFile(file, sendFileOptions, (error) => {
-    //     if (error) {
-    //         logger.error(error);
-    //         res.status(404).send("Not found");
-    //     }else {
-    //         res.download(file);
-    //     }
-    // });
+
+    if (Object.keys(req.body).length === 0) return res.send("No Content");
+    const link = req.body.link;
+    const file = __dirname + `/../${link}`;
+    downloadFiles(file, res);
 };
 
 exports.addItem = (req, res) => {
