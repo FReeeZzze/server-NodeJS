@@ -1,9 +1,9 @@
 const express = require("express");
 const homeController = require("./../controllers/homeController.js");
-const {upload} = require("../config");
+const {upload, maxCount} = require("../config");
 
 const type = upload.single("filedata");
-const multiType = upload.array("filedata", 2); // сколько файлов можно загрузить
+const multiType = upload.array("filedata", maxCount); // сколько файлов можно загрузить
 const homeRouter = express.Router(); // для адресов с "/"
 
 homeRouter.post('/test/upload', multiType, homeController.test);
@@ -15,7 +15,7 @@ homeRouter.get('/download', homeController.download);
 homeRouter.get("/:item/id/:id", homeController.getItemsById);
 
 //post запросы
-homeRouter.post("/add/:item", type, homeController.addItem);
+homeRouter.post("/add/:item", multiType, homeController.addItem);
 
 //put запросы
 homeRouter.put("/edit/:item", type, homeController.editItem);

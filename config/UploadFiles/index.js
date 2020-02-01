@@ -7,6 +7,7 @@ let name_of_type = null;
 const rootDir = 'uploads/items';
 
 const createDestination = (req, file, cb) => {
+
     const id = `f${(~~(Math.random()*1e8)).toString(16)}`;
     filename = file.fieldname + '-' + Date.now() + id;
     fs.mkdir(`${rootDir}/${filename}`, {recursive: false}, (err) => {
@@ -16,17 +17,17 @@ const createDestination = (req, file, cb) => {
         case (jpeg): {
             name_of_type = 'images';
             createDir(rootDir,filename,name_of_type,cb);
-            break
+            break;
         }
         case (png): {
             name_of_type = 'images';
             createDir(rootDir,filename,name_of_type,cb);
-            break
+            break;
         }
         case (docx): {
             name_of_type = 'docs';
             createDir(rootDir,filename,name_of_type,cb);
-            break
+            break;
         }
         case (doc): {
             name_of_type = 'docs';

@@ -29,9 +29,6 @@ exports.addBook = (req, res, base) => {
         link: base.link,
         extensions: base.extensions,
         authors: base.authors,
-        dates: {
-            created: Date.now()
-        }
     });
     book.save();
     res.send(book);

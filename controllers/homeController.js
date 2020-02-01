@@ -1,17 +1,36 @@
 const mongoose = require('mongoose');
 const Book = require("../models/items/book.js");
 const {removeFiles, downloadFiles} = require("../config/Methods");
-const {addBook} = require("../config/Methods/books");
-const {books, video, audio} = require("../config/Types");
-const {editBook} = require("../config/Methods/books");
-
+const {addBook, editBook} = require("../config/Methods/books");
+const {books, video, audio, docx} = require("../config/Types");
+const fs = require('fs-extra');
 exports.index = (req, res) => {
     res.send("Главная страница");
 };
 
 exports.test = (req, res) => {
-    const Files = req.files;
-    res.send(Files);
+
+    const fileData = req.files;
+    let main_dir = null;
+    let link = null;
+    let dest = [];
+    for(let i = 0; i < fileData.length; i++){
+        if(fileData[i].mimetype === docx){
+            main_dir = fileData[i].destination.split('/').splice(0,3).join('/');
+            link = fileData[i].path;
+        }else dest.push(fileData[i].path);
+    }
+    for(let i = 0; i < dest.length; i++){
+        main_dir += '/' + dest[i].split('\\').splice(3,4).join('/');
+        fs.move(dest[i], main_dir,  function (err) {
+            if (err) return console.error(err);
+            const dir = __dirname + `/../${dest[i].split('\\').splice(0,3).join('/')}`;
+            fs.remove(dir, function(err){
+                if(err) return console.log(err);
+            });
+        });
+    }
+    res.send(fileData);
 };
 
 exports.download = (req, res, next) => {
@@ -25,28 +44,49 @@ exports.download = (req, res, next) => {
 exports.addItem = (req, res) => {
 
     const item = req.params.item;
-    const fileData = req.file;
+    const fileData = req.files;
 
     if (Object.keys(req.body).length === 0 || !fileData) return res.send("No Content");
     if(!(item === books || item === audio || item === video)) {
-        const path = req.file.path;
-        const file = __dirname + `/../${path}`;
-        removeFiles(file);
+        for(let i = 0; i<fileData.length; i++){
+            const path = req.files[i].path;
+            const file = __dirname + `/../${path}`;
+            removeFiles(file);
+        }
     }
 
-    console.log("Загруженный Файл", fileData);
+    let main_dir = null;
+    let base = null;
+    let dest = [];
+    for(let i = 0; i < fileData.length; i++){
+        if(fileData[i].mimetype === docx){
+            main_dir = fileData[i].destination.split('/').splice(0,3).join('/');
+            //for all
+            base = {
+                extensions: fileData[i].originalname.split('.').pop(),
+                title: req.body.title,
+                link: fileData[i].path,
+                description: req.body.description,
+                language: req.body.language,
+                viewsCount: req.body.viewsCount,
+                size: fileData[i].size,
+                authors: req.body.authors
+            };
+        }else dest.push(fileData[i].path);
+    }
+    for(let i = 0; i < dest.length; i++){
+        main_dir += '/' + dest[i].split('\\').splice(3,4).join('/');
+        fs.move(dest[i], main_dir,  function (err) {
+            if (err) return console.error(err);
+            const dir = __dirname + `/../${dest[i].split('\\').splice(0,3).join('/')}`;
+            fs.remove(dir, function(err){
+                if(err) return console.log(err);
+            });
+        });
+    }
 
-    //for all
-    let base = {
-        extensions: fileData.originalname.split('.').pop(),
-        title: req.body.title,
-        link: req.file.path,
-        description: req.body.description,
-        language: req.body.language,
-        viewsCount: req.body.viewsCount,
-        size: req.file.size,
-        authors: req.body.authors
-    };
+    // console.log("Загруженный Файл", fileData);
+
     switch(item) {
         case books: {
             addBook(req, res, base);
