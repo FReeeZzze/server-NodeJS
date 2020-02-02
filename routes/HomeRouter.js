@@ -18,7 +18,7 @@ homeRouter.get("/:item/id/:id", homeController.getItemsById);
 homeRouter.post("/add/:item", multiType, homeController.addItem);
 
 //put запросы
-homeRouter.put("/edit/:item", type, homeController.editItem);
+homeRouter.put("/edit/:item", multiType, homeController.editItem);
 
 //delete запросы
 homeRouter.delete("/delete/:item/id/:id", homeController.deleteItem);

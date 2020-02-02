@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 exports.removeFiles = (params) => {
-    const dir = __dirname + `/../../uploads/items/${params.split("\\").pop()}`;
+    const dir = __dirname + `/../../${params.split("\\").splice(0,3).join('/')}`;
     console.log("del dir: ", dir);
     fs.remove(dir, function(err){
         if(err) return console.log(err);
