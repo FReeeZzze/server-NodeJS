@@ -37,6 +37,19 @@ user.pre('save', function(next) {
     });
 });
 
+user.pre('findOneAndUpdate', function(next) {
+    // if password is not updated
+    if (!this._update.password) {
+        return next()
+    }
+
+    bcrJS.hash(this._update.password, SALT_WORK_FACTOR, (err, hash) => {
+        if (err) return next(err)
+        this._update.password = hash;
+        next()
+    })
+});
+
 user.methods.comparePassword = function(candidatePassword, cb) {
     bcrJS.compare(candidatePassword, this.password, function(err, isMatch) {
         if (err) return cb(err);
@@ -58,12 +71,12 @@ module.exports.addUser = (user, callback) => {
     User.create(user, callback);
 };
 
-module.exports.updateUser = (id, user, options, callback) => {
-    let query = {_id: id};
+module.exports.updateUser = (id, users, options, callback) => {
+    query = {_id: id};
     let update = {
-        name: user.name,
-        email: user.email,
-        password: user.password,
+        name: users.name,
+        email: users.email,
+        password: users.password,
     };
     console.log("Update", update, "id: ", id);
     User.findOneAndUpdate(query, update, options, callback);
