@@ -159,7 +159,7 @@ exports.deleteItem = (req, res) => {
                 if(err) return console.log(err);
                 if(book === null) {
                     check = false;
-                    res.send("Not found this book");
+                    return res.send("Not found this book");
                 }else {
                     check = true;
                     removeFiles(book.link);
