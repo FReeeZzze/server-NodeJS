@@ -12,7 +12,10 @@ exports.downloadFiles = (params, res) => {
     fs.stat(params, function(err, stat) {
         if(err == null) {
             // file exist
-            res.download(params);
+            const filename = params.split('\\').pop();
+            res.download(params, filename, () => {
+                console.log('download complete!')
+            });
         } else if(err.code === 'ENOENT') {
             // file does not exist
             fs.writeFile('download-logs.txt', err, function(err, result) {

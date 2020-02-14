@@ -20,6 +20,9 @@ const baseMaterial = new Schema({
     },
     size: Number,
     link: String,
+    images: {
+        link: String,
+    },
     extensions: String,
     authors: {
         type: String,

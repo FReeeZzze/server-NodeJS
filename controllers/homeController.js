@@ -1,41 +1,17 @@
 const mongoose = require('mongoose');
-const fs = require('fs-extra');
 const Book = require("../models/items/book.js");
 const {removeFiles, downloadFiles} = require("../config/Methods");
-const {addBook, editBook} = require("../config/Methods/books");
-const {books, video, audio, docx, doc, pdf} = require("../config/Types");
+const {addBook, editBook, workWithFiles} = require("../config/Methods/books");
+const {books, video, audio} = require("../config/Types");
 
 exports.index = (req, res) => {
     res.send("Главная страница");
 };
 
-exports.test = (req, res) => {
-
-    const fileData = req.files;
-    let main_dir = null;
-    let link = null;
-    let dest = [];
-    for(let i = 0; i < fileData.length; i++){
-        if(fileData[i].mimetype === docx){
-            main_dir = fileData[i].destination.split('/').splice(0,3).join('/');
-            link = fileData[i].path;
-        }else dest.push(fileData[i].path);
-    }
-    for(let i = 0; i < dest.length; i++){
-        main_dir += '/' + dest[i].split('\\').splice(3,4).join('/');
-        fs.move(dest[i], main_dir,  function (err) {
-            if (err) return console.error(err);
-            removeFiles(dest[i]);
-        });
-    }
-    res.send(fileData);
-};
-
 exports.download = (req, res, next) => {
-
-    if (Object.keys(req.body).length === 0) return res.send("No Content");
-    const link = req.body.link;
-    const file = __dirname + `/../${link}`;
+    console.log(req,res);
+    const link = req.query.path;
+    const file = `${link}`;
     downloadFiles(file, res);
 };
 
@@ -44,41 +20,16 @@ exports.addItem = (req, res) => {
     const item = req.params.item;
     const fileData = req.files;
 
-    if (Object.keys(req.body).length === 0 || !fileData) return res.send("No Content");
-    if(!(item === books || item === audio || item === video)) {
+    if (Object.keys(req.body).length === 0 || !fileData) {
         for(let i = 0; i<fileData.length; i++){
-            const path = req.files[i].path;
+            const path = fileData[i].path;
             removeFiles(path);
         }
-        return res.send("not correct item");
+        return res.send("No Content");
     }
 
-    let main_dir = null;
-    let base = null;
-    let dest = [];
-    for(let i = 0; i < fileData.length; i++){
-        if(fileData[i].mimetype === docx || fileData[i].mimetype === doc || fileData[i].mimetype === pdf){
-            main_dir = fileData[i].destination.split('/').splice(0,3).join('/');
-            //for all
-            base = {
-                extensions: fileData[i].originalname.split('.').pop(),
-                title: req.body.title,
-                link: fileData[i].path,
-                description: req.body.description,
-                language: req.body.language,
-                viewsCount: req.body.viewsCount,
-                size: fileData[i].size,
-                authors: req.body.authors
-            };
-        }else dest.push(fileData[i].path);
-    }
-    for(let i = 0; i < dest.length; i++){
-        main_dir += '/' + dest[i].split('\\').splice(3,4).join('/');
-        fs.move(dest[i], main_dir,  function (err) {
-            if (err) return console.error(err);
-            removeFiles(dest[i])
-        });
-    }
+    let base = {};
+    base = workWithFiles(req,fileData,base);
 
     // console.log("Загруженный Файл", fileData);
 
@@ -191,44 +142,18 @@ exports.editItem = (req, res) => {
     const item = req.params.item;
     const fileData = req.files;
 
-    if (Object.keys(req.body).length === 0 || !fileData) return res.send("No Content");
-    if(!(item === books || item === audio || item === video)) {
+    if (Object.keys(req.body).length === 0 || !fileData) {
         for(let i = 0; i<fileData.length; i++){
-            const path = req.files[i].path;
+            const path = fileData[i].path;
             removeFiles(path);
         }
-        return res.send("not correct item");
+        return res.send("No Content");
     }
 
     // console.log("Файл", fileData);
 
-    let main_dir = null;
-    let base = null;
-    let dest = [];
-    for(let i = 0; i < fileData.length; i++){
-        if(fileData[i].mimetype === docx || fileData[i].mimetype === doc || fileData[i].mimetype === pdf){
-            main_dir = fileData[i].destination.split('/').splice(0,3).join('/');
-            //for all
-            base = {
-                id: req.body.id,
-                extensions: fileData[i].originalname.split('.').pop(),
-                title: req.body.title,
-                link: fileData[i].path,
-                description: req.body.description,
-                language: req.body.language,
-                viewsCount: req.body.viewsCount,
-                size: fileData[i].size,
-                authors: req.body.authors
-            };
-        }else dest.push(fileData[i].path);
-    }
-    for(let i = 0; i < dest.length; i++){
-        main_dir += '/' + dest[i].split('\\').splice(3,4).join('/');
-        fs.move(dest[i], main_dir,  function (err) {
-            if (err) return console.error(err);
-            removeFiles(dest[i])
-        });
-    }
+    let base = {};
+    base = workWithFiles(req, fileData, base);
 
     switch(item) {
         case books: {

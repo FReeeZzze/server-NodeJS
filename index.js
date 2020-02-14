@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
+const errF = require('./errors/errors');
 
 // Настройки
 const {header, PORT, dbName} = require("./config");
@@ -22,10 +23,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use('/', router);
+app.use(express.static('uploads'));
 app.use((err, req, res, next) => {
-    let error = err.message;
-    res.status(500);
-    res.send({ "error": error });
+    errF(err.message, res);
 });
 
 app.use(header);

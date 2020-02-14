@@ -5,6 +5,7 @@ const upload = require('./UploadFiles');
 module.exports = {
     'secret': 'eLibS4_bv',
     'PORT': 5000,
+    'server': 'http://localhost:5000',
     'dbName': "elib_database",
     'maxCount': '2',
     header,

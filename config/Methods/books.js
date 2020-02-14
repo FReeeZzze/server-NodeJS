@@ -1,7 +1,11 @@
 const Book = require("../../models/items/book.js");
 const {removeFiles} = require("../../config/Methods");
+const {docx, doc, pdf} = require("../../config/Types");
+const {server} = require("../../config");
+const fs = require('fs-extra');
 
 exports.addBook = (req, res, base) => {
+
     let content = req.body.content;
     let references = req.body.references;
     let annotation = req.body.annotation;
@@ -9,6 +13,7 @@ exports.addBook = (req, res, base) => {
     let ISBN = req.body.ISBN;
     let UDK = req.body.UDK;
     let BBK = req.body.BBK;
+
     const book = new Book({
         publishing_house: publishing_house,
         identification: {
@@ -27,6 +32,9 @@ exports.addBook = (req, res, base) => {
         viewsCount: base.viewsCount,
         size: base.size,
         link: base.link,
+        images: {
+            link: base.images_link
+        },
         extensions: base.extensions,
         authors: base.authors,
     });
@@ -35,6 +43,7 @@ exports.addBook = (req, res, base) => {
 };
 
 exports.editBook = (req, res, base) => {
+
     let content = req.body.content;
     let references = req.body.references;
     let annotation = req.body.annotation;
@@ -42,6 +51,7 @@ exports.editBook = (req, res, base) => {
     let ISBN = req.body.ISBN;
     let UDK = req.body.UDK;
     let BBK = req.body.BBK;
+
     const newBook = {
         title: base.title,
         description: base.description,
@@ -59,6 +69,7 @@ exports.editBook = (req, res, base) => {
         references : references,
         annotation : annotation
     };
+
     Book.getBookById(base.id, (err,book) => {
         if(err) return console.log(err);
         removeFiles(book.link);
@@ -68,4 +79,42 @@ exports.editBook = (req, res, base) => {
         book.markModified('update');
         res.send(book);
     });
+};
+
+exports.workWithFiles = (req, fileData, base) => {
+    let main_dir = null;
+    let image_link = null;
+    let temp;
+    let dest = [];
+    for(let i = 0; i < fileData.length; i++){
+        if(fileData[i].mimetype === docx || fileData[i].mimetype === doc || fileData[i].mimetype === pdf){
+            main_dir = fileData[i].destination.split('/').splice(0,3).join('/');
+            //for all
+            Object.assign(base, {
+                extensions: fileData[i].originalname.split('.').pop(),
+                title: req.body.title,
+                link: fileData[i].path,
+                description: req.body.description,
+                language: req.body.language,
+                viewsCount: req.body.viewsCount,
+                size: fileData[i].size,
+                authors: req.body.authors
+            });
+            if(req.body.id !== undefined) Object.assign(base, {id: req.body.id});
+        }else {
+            dest.push(fileData[i].path);
+            image_link = fileData[i].path.split('\\').splice(3,2).join('/');
+        }
+    }
+    for(let i = 0; i < dest.length; i++){
+        main_dir += '/' + dest[i].split('\\').splice(3,4).join('/');
+        fs.move(dest[i], main_dir,  function (err) {
+            if (err) return console.error(err);
+            removeFiles(dest[i])
+        });
+    }
+
+    temp = server + '/' + base.link.split('\\').splice(1,2).join('/') + '/' + image_link;
+    Object.assign(base, {images_link: temp});
+    return base;
 };

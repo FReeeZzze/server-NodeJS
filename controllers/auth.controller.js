@@ -29,7 +29,8 @@ class Auth {
             if (err) throw err;
 
             if (!user) {
-                res.status(401).send({success: false, msg: 'Authentication failed. User not found.'});
+                // res.status(401).send({success: false, msg: 'Authentication failed. User not found.'});
+                res.json({success: false, msg: 'Authentication failed. User not found.'});
             } else {
                 // check if password matches
                 user.comparePassword(req.body.password,  (err, isMatch) => {
@@ -37,9 +38,10 @@ class Auth {
                         // if user is found and password is right create a token
                         var token = jwt.sign(user.toJSON(), config.secret,{ expiresIn: '30m' });
                         // return the information including token as JSON
-                        res.json({success: true, token: 'JWT ' + token});
+                        res.json({success: true, token: 'JWT ' + token, msg: 'Authentication success'});
                     } else {
-                        res.status(401).send({success: false, msg: 'Authentication failed. Wrong password.'});
+                        // res.status(401).send({success: false, msg: 'Authentication failed. Wrong password.'});
+                        res.json({success: false, msg: 'Authentication failed. Wrong password.'});
                     }
                 });
             }

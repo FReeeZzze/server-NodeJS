@@ -2,11 +2,10 @@ const express = require("express");
 const homeController = require("./../controllers/homeController.js");
 const {upload, maxCount} = require("../config");
 
-const type = upload.single("filedata");
+const type = upload.single("filedata"); // для загрузки одного файла
 const multiType = upload.array("filedata", maxCount); // сколько файлов можно загрузить
 const homeRouter = express.Router(); // для адресов с "/"
 
-homeRouter.post('/test/upload', multiType, homeController.test);
 
 //get запросы
 homeRouter.get("/",homeController.index);
