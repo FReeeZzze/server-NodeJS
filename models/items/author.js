@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const author = new Schema({
@@ -6,16 +6,16 @@ const author = new Schema({
     name: {
         firstName: {
             type: String,
-            required: true
+            required: true,
         },
-        lastName: String
+        lastName: String,
     },
     biography: String,
-    profilePicture: Buffer,
+    profilePicture: String,
     created: {
         type: Date,
-        default: Date.now
-    }
+        default: Date.now,
+    },
 });
 
-module.exports = mongoose.model("Author", author);
+module.exports = mongoose.model('Author', author);

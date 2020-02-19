@@ -1,34 +1,38 @@
 const passport = require('passport');
-const { Strategy, ExtractJwt } = require("passport-jwt");
-const User = require ('../../models/users/user');
-const {secret} = require('../index');
+const { Strategy, ExtractJwt } = require('passport-jwt');
+const User = require('../../models/users/user');
+const { secret } = require('../index');
 
 class passportManager {
-    initialize(){
+    initialize() {
         let opts = {
-            jwtFromRequest : ExtractJwt.fromAuthHeaderWithScheme("jwt"),
-            secretOrKey : secret
+            jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('jwt'),
+            secretOrKey: secret,
         };
-        passport.use(new Strategy(opts, function(jwt_payload, done) {
-            User.findOne({id: jwt_payload.id}, function(err, user) {
-                if (err) {
-                    return done(err, false);
-                }
-                if (user) {
-                    done(null, user);
-                } else {
-                    done(null, false);
-                }
-            });
-        }));
+        passport.use(
+            new Strategy(opts, function(jwt_payload, done) {
+                User.findOne({ id: jwt_payload.id }, function(err, user) {
+                    if (err) {
+                        return done(err, false);
+                    }
+                    if (user) {
+                        done(null, user);
+                    } else {
+                        done(null, false);
+                    }
+                });
+            }),
+        );
         return passport.initialize();
     }
-    authenticate(req, res, next){
-        passport.authenticate('jwt', { session: false}, (err, user, info) => {
-            if (err) { return next(err); }
+    authenticate(req, res, next) {
+        passport.authenticate('jwt', { session: false }, (err, user, info) => {
+            if (err) {
+                return next(err);
+            }
             if (!user) {
-                if (info.name === "TokenExpiredError") {
-                    return res.status(401).json({ message: "Your token has expired." });
+                if (info.name === 'TokenExpiredError') {
+                    return res.status(401).json({ message: 'Your token has expired.' });
                 } else {
                     return res.status(401).json({ message: info.message });
                 }
@@ -36,7 +40,6 @@ class passportManager {
             req.user = user;
             return next();
         })(req, res, next);
-    };
-
+    }
 }
 module.exports = new passportManager();

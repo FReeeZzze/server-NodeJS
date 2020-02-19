@@ -1,21 +1,22 @@
-const fs = require("fs-extra");
-const Errors = require("../models/errors/errors");
+// eslint-disable-next-line no-unused-vars
+const fs = require('fs-extra');
+const Errors = require('../models/errors/errors');
 
 const err = (error, res) => {
-    const id = `f${(~~(Math.random()*1e8)).toString(16)}`;
+    const id = `f${(~~(Math.random() * 1e8)).toString(16)}`;
     let newErr = new Errors({
         code: id,
-        error: error
+        error: error,
     });
-    Errors.find({error: error},(err, code) => {
-        if(err) return console.log(err);
-        if(code === null) {
+    Errors.find({ error: error }, (err, code) => {
+        if (err) return console.log(err);
+        if (code === null) {
             Errors.addError(newErr, (err, code) => {
-                if(err) return console.log(err);
+                if (err) return console.log(err);
                 res.status(500);
                 res.json(code);
             });
-        }else {
+        } else {
             res.status(500);
             res.json(code);
         }

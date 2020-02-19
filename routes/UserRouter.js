@@ -1,19 +1,19 @@
-const express = require("express");
-const userController = require("./../controllers/userController.js");
-const userRouter = express.Router();  // для адресов с "/users"
+const express = require('express');
+const userController = require('./../controllers/userController.js');
+const userRouter = express.Router(); // для адресов с "/users"
 
 //get запросы
-userRouter.get("/",userController.getUsers);
+userRouter.get('/', userController.getUsers);
 
-userRouter.get("/id/:id", userController.findUser);
+userRouter.get('/id/:id', userController.findUser);
 
 //post запросы
-userRouter.post("/", userController.addUser);
+userRouter.post('/', userController.addUser);
 
 //delete запросы
-userRouter.delete("/:id", userController.deleteUser);
+userRouter.delete('/:id', userController.deleteUser);
 
 //put запросы
-userRouter.put("/", userController.editUser);
+userRouter.put('/', userController.editUser);
 
 module.exports = userRouter;

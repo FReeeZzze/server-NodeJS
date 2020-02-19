@@ -1,11 +1,11 @@
-const Book = require("../../models/items/book.js");
-const {removeFiles} = require("../../config/Methods");
-const {docx, doc, pdf} = require("../../config/Types");
-const {server} = require("../../config");
+const Book = require('../../models/items/book.js');
+const { removeFiles } = require('./index');
+const { editString } = require('../Methods/manipulations');
+const { docx, doc, pdf } = require('../../config/Types');
+const { server } = require('../../config');
 const fs = require('fs-extra');
 
-exports.addBook = (req, res, base) => {
-
+exports.addBook = async (req, res, base) => {
     let content = req.body.content;
     let references = req.body.references;
     let annotation = req.body.annotation;
@@ -19,13 +19,14 @@ exports.addBook = (req, res, base) => {
         identification: {
             ISBN: ISBN,
             UDK: UDK,
-            BBK: BBK
+            BBK: BBK,
         },
         about: {
             content: content,
             references: references,
-            annotation: annotation
+            annotation: annotation,
         },
+        downloads: 0,
         title: base.title,
         description: base.description,
         language: base.language,
@@ -33,17 +34,16 @@ exports.addBook = (req, res, base) => {
         size: base.size,
         link: base.link,
         images: {
-            link: base.images_link
+            link: base.images_link,
         },
         extensions: base.extensions,
         authors: base.authors,
     });
-    book.save();
+    await book.save();
     res.send(book);
 };
 
 exports.editBook = (req, res, base) => {
-
     let content = req.body.content;
     let references = req.body.references;
     let annotation = req.body.annotation;
@@ -57,64 +57,79 @@ exports.editBook = (req, res, base) => {
         description: base.description,
         language: base.language,
         viewsCount: base.viewsCount,
+        images_link: base.images_link,
         size: base.size,
         link: base.link,
         extensions: base.extensions,
         authors: base.authors,
-        publishing_house : publishing_house,
-        ISBN : ISBN,
-        UDK : UDK,
+        publishing_house: publishing_house,
+        ISBN: ISBN,
+        UDK: UDK,
         BBK: BBK,
-        content : content,
-        references : references,
-        annotation : annotation
+        content: content,
+        references: references,
+        annotation: annotation,
     };
-
-    Book.getBookById(base.id, (err,book) => {
-        if(err) return console.log(err);
+    // Найти обновляемую книгу по id и удалить её к чертям ^_^
+    Book.getBookById(base.id, (err, book) => {
+        if (err) return console.log(err);
         removeFiles(book.link);
     });
-    Book.updateBook(base.id, newBook, {new: true, useFindAndModify: false}, (err, book) => {
-        if(err) return console.log(err);
+
+    Book.updateBook(base.id, newBook, { new: true, useFindAndModify: false }, (err, book) => {
+        if (err) return console.log(err);
         book.markModified('update');
         res.send(book);
     });
 };
 
-exports.workWithFiles = (req, fileData, base) => {
+module.exports.workWithFiles = (req, fileData, base) => {
     let main_dir = null;
     let image_link = null;
     let temp;
     let dest = [];
-    for(let i = 0; i < fileData.length; i++){
-        if(fileData[i].mimetype === docx || fileData[i].mimetype === doc || fileData[i].mimetype === pdf){
-            main_dir = fileData[i].destination.split('/').splice(0,3).join('/');
-            //for all
+
+    // Добавить в общую копилку из body
+    Object.assign(base, {
+        title: req.body.title,
+        description: req.body.description,
+        language: 'ru', // когда на фронте будет сделано работа со сменой языка, здесь будет -  req.body.language
+        viewsCount: 0, // когда на фронте будет сделано просмотры, здесь будет -  req.body.viewsCount
+        authors: req.body.authors,
+    });
+
+    for (let i = 0; i < fileData.length; i++) {
+        if (fileData[i].mimetype === docx || fileData[i].mimetype === doc || fileData[i].mimetype === pdf) {
+            // Основная директория будет такой где находиться файл DOCX/DOC/PDF.
+
+            main_dir = editString(fileData[i].destination, '/', 0, 3);
+            // Добавить всё что связано с файлом DOCX/DOC/PDF...
             Object.assign(base, {
                 extensions: fileData[i].originalname.split('.').pop(),
-                title: req.body.title,
                 link: fileData[i].path,
-                description: req.body.description,
-                language: req.body.language,
-                viewsCount: req.body.viewsCount,
                 size: fileData[i].size,
-                authors: req.body.authors
             });
-            if(req.body.id !== undefined) Object.assign(base, {id: req.body.id});
-        }else {
+            // если id есть то добавляем его в общую копилку (для обновления данных) /editItem
+            if (req.body.id !== undefined) Object.assign(base, { id: req.body.id });
+        } else {
+            // Добавить в другой пул файлы не связанные по условию выше
             dest.push(fileData[i].path);
-            image_link = fileData[i].path.split('\\').splice(3,2).join('/');
+            image_link = editString(fileData[i].path, '\\', 3, 2);
         }
     }
-    for(let i = 0; i < dest.length; i++){
-        main_dir += '/' + dest[i].split('\\').splice(3,4).join('/');
-        fs.move(dest[i], main_dir,  function (err) {
-            if (err) return console.error(err);
-            removeFiles(dest[i])
-        });
-    }
+    if (main_dir !== null) {
+        for (let i = 0; i < dest.length; i++) {
+            // Переносим файлы из другого пула в основную директорию, хуле нам программистам...мы всё любим складировать в одной.
+            main_dir += '\\' + editString(dest[i], '\\', 3, 4);
+            fs.move(dest[i], main_dir, function(err) {
+                if (err) return console.error(err);
+                removeFiles(dest[i]);
+            });
+        }
+        // добавляем ссылку изображения (пример) -  сервер/ссылка_на_изображение_bitch
+        temp = server + '\\' + editString(base.link, '\\', 1, 2) + '\\' + image_link;
+        Object.assign(base, { images_link: temp });
+    } else console.log('NOTHING TO DO');
 
-    temp = server + '/' + base.link.split('\\').splice(1,2).join('/') + '/' + image_link;
-    Object.assign(base, {images_link: temp});
     return base;
 };
