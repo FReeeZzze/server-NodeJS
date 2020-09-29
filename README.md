@@ -1,2 +1,2 @@
-# server-NodeJS
-server NodeJS,Express,MongoDB
+# server for client-library
+## stack: `NodeJS`, `Express`, `database is MongoDB`.

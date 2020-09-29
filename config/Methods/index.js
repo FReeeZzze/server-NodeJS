@@ -6,7 +6,7 @@ exports.removeFiles = (params) => {
     // eslint-disable-next-line no-undef
     const dir = editString(__dirname, '\\', 0, 4) + `\\${editString(params, '\\', 0, 3)}`;
     console.log('\n del dir: ', dir);
-    fs.remove(dir, function(err) {
+    fs.remove(dir, function (err) {
         if (err) return console.log(err);
         console.log('\n - - files and directory deleted successfully - - ');
     });
@@ -22,7 +22,7 @@ exports.upDate = (id, res) => {
 
 exports.downloadFiles = (link, res) => {
     // eslint-disable-next-line no-unused-vars
-    fs.stat(link, function(err, stat) {
+    fs.stat(link, function (err, stat) {
         if (err == null) {
             // file exist
             const filename = link.split('\\').pop();
@@ -32,7 +32,7 @@ exports.downloadFiles = (link, res) => {
         } else if (err.code === 'ENOENT') {
             // file does not exist
             // eslint-disable-next-line no-unused-vars
-            fs.writeFile('download-logs.txt', err, function(err, result) {
+            fs.writeFile('download-logs.txt', err, function (err, result) {
                 if (err) console.log('error', err);
                 res.send('FILE DOES NOT EXIST!');
             });

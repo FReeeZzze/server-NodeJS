@@ -12,7 +12,7 @@ const createDestination = (req, file, cb) => {
 
         fs.mkdir(`${rootDir}/${filename}`, { recursive: false }, (err) => {
             if (err) {
-                console.log('mkdir-CreateDist: ', err);
+                console.log('mkdir-CreateDist: ', err.message);
                 throw err;
             }
         });

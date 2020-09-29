@@ -42,17 +42,21 @@ const bookSchema = extendSchema(
 );
 
 bookSchema.method({
-    getISBN: function(cb) {
+    getISBN: function (cb) {
         console.log(cb);
     },
-    getUDK: function() {},
-    getBBK: function() {},
+    getUDK: function () {},
+    getBBK: function () {},
 });
 
 const Book = (module.exports = mongoose.model('Book', bookSchema));
 
 module.exports.getBooks = (callback, limit) => {
     Book.find(callback).limit(limit);
+};
+
+module.exports.getBookBy = (book, callback) => {
+    Book.findOne(book, callback);
 };
 
 module.exports.getBookById = (id, callback) => {

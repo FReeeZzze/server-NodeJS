@@ -121,7 +121,7 @@ module.exports.workWithFiles = (req, fileData, base) => {
         for (let i = 0; i < dest.length; i++) {
             // Переносим файлы из другого пула в основную директорию, хуле нам программистам...мы всё любим складировать в одной.
             main_dir += '\\' + editString(dest[i], '\\', 3, 4);
-            fs.move(dest[i], main_dir, function(err) {
+            fs.move(dest[i], main_dir, function (err) {
                 if (err) return console.error(err);
                 removeFiles(dest[i]);
             });

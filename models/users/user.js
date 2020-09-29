@@ -20,18 +20,18 @@ const user = new Schema(
     { timestamps: true },
 );
 
-user.pre('save', function(next) {
+user.pre('save', function (next) {
     let user = this;
 
     // only hash the password if it has been modified (or is new)
     if (!user.isModified('password')) return next();
 
     // generate a salt
-    bcrJS.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+    bcrJS.genSalt(SALT_WORK_FACTOR, function (err, salt) {
         if (err) return next(err);
 
         // hash the password using our new salt
-        bcrJS.hash(user.password, salt, function(err, hash) {
+        bcrJS.hash(user.password, salt, function (err, hash) {
             if (err) return next(err);
 
             // override the cleartext password with the hashed one
@@ -41,18 +41,18 @@ user.pre('save', function(next) {
     });
 });
 
-user.pre('create', function(next) {
+user.pre('create', function (next) {
     let user = this;
 
     // only hash the password if it has been modified (or is new)
     if (!user.isModified('password')) return next();
 
     // generate a salt
-    bcrJS.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+    bcrJS.genSalt(SALT_WORK_FACTOR, function (err, salt) {
         if (err) return next(err);
 
         // hash the password using our new salt
-        bcrJS.hash(user.password, salt, function(err, hash) {
+        bcrJS.hash(user.password, salt, function (err, hash) {
             if (err) return next(err);
 
             // override the cleartext password with the hashed one
@@ -62,7 +62,7 @@ user.pre('create', function(next) {
     });
 });
 
-user.pre('findOneAndUpdate', function(next) {
+user.pre('findOneAndUpdate', function (next) {
     // if password is not updated
     if (!this._update.password) {
         return next();
@@ -75,8 +75,8 @@ user.pre('findOneAndUpdate', function(next) {
     });
 });
 
-user.methods.comparePassword = function(candidatePassword, cb) {
-    bcrJS.compare(candidatePassword, this.password, function(err, isMatch) {
+user.methods.comparePassword = function (candidatePassword, cb) {
+    bcrJS.compare(candidatePassword, this.password, function (err, isMatch) {
         if (err) return cb(err);
         cb(null, isMatch);
     });

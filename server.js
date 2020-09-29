@@ -1,5 +1,4 @@
 const express = require('express');
-const cors = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const logger = require('morgan');
@@ -16,7 +15,6 @@ const router = require('./routes');
 // Приложение
 const app = express();
 
-app.use(cors());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -24,9 +22,10 @@ app.use(cookieParser());
 
 app.use('/', router);
 app.use(express.static('uploads'));
-// eslint-disable-next-line no-unused-vars
+
 app.use((err, req, res, next) => {
     errF(err.message, res);
+    next();
 });
 
 app.use(header);
@@ -42,11 +41,11 @@ const MainApp = async () => {
             });
         });
         // eslint-disable-next-line no-unused-vars
-        app.use((req, res, next) => {
+        app.use((req, res) => {
             res.status(404).send('Not Found');
         });
     } catch (err) {
-        console.log(err);
+        console.log(err.message);
     }
 };
 

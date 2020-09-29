@@ -22,15 +22,15 @@ const err = (error, res) => {
         }
     });
 
-    // fs.appendFile('errors/error-logs.txt', newErr, (err, result) => {
-    //     if(err) console.log('error', err);
-    //     let data = fs.readFileSync('errors/error-logs.txt', "utf8", (err, data) => {
-    //         if (err) console.log('error', err);
-    //     });
-    //     console.log(data);
-    //     // res.status(500);
-    //     // res.send({"errors": data});
-    // });
+    fs.appendFile('errors/error-logs.txt', newErr, (err, result) => {
+        if (err) console.log('error', err);
+        let data = fs.readFileSync('errors/error-logs.txt', 'utf8', (err, data) => {
+            if (err) console.log('error', err);
+        });
+        console.log(data);
+        res.status(500);
+        res.send({ errors: data });
+    });
 };
 
 module.exports = err;

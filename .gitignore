@@ -5,7 +5,9 @@
 /.idea
 /.idea/workspace.xml
 /uploads
+/errors/error-logs.txt
 
+download-logs.txt
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

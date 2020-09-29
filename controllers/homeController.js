@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Book = require('../models/items/book.js');
-const { removeFiles, downloadFiles, upDate} = require('../config/Methods');
+const { removeFiles, downloadFiles, upDate } = require('../config/Methods');
 const { addBook, editBook, workWithFiles } = require('../config/Methods/books');
 const { books, video, audio } = require('../config/Types');
 
@@ -8,8 +8,7 @@ exports.index = (req, res) => {
     res.send('Главная страница');
 };
 
-// eslint-disable-next-line no-unused-vars
-exports.download = (req, res, next) => {
+exports.download = (req, res) => {
     const link = req.query.path;
     downloadFiles(`${link}`, res);
 };
@@ -34,11 +33,9 @@ exports.addItem = (req, res) => {
     let base = {};
     base = workWithFiles(req, fileData, base);
 
-    // console.log("Загруженный Файл", fileData);
-
     switch (item) {
         case books: {
-            addBook(req, res, base);
+            addBook(req, res, base).then(r => r);
             break;
         }
         case audio: {
@@ -77,7 +74,7 @@ exports.getItems = (req, res) => {
     }
 };
 
-exports.getItemsById = (req, res) => {
+exports.getItemById = (req, res) => {
     const item = req.params.item;
     const id = req.params.id;
     if (mongoose.Types.ObjectId.isValid(id) === false) return res.send('Not valid ID');
@@ -95,6 +92,33 @@ exports.getItemsById = (req, res) => {
         }
         case video: {
             console.log(video);
+            break;
+        }
+        default:
+            res.send('No item available');
+    }
+};
+
+exports.getItemBy = (req, res) => {
+    const item = req.params.item;
+    const data = {
+        extensions: req.query.extension,
+        authors: req.query.authors,
+        description: req.query.description,
+        publishing_house: req.query.publishing_house,
+        // about: {
+        //     content: req.query.content,
+        //     annotation: req.query.annotation,
+        // },
+        language: req.query.language,
+    };
+    console.log('LOG this: ', data);
+    switch (item) {
+        case books: {
+            Book.getBookBy(data, (err, data) => {
+                if (err) return console.log('ERR: ', err);
+                res.send(data);
+            });
             break;
         }
         default:
@@ -144,8 +168,6 @@ exports.deleteItem = (req, res) => {
 exports.editItem = (req, res) => {
     const item = req.params.item;
     const fileData = req.files;
-
-    // console.log("Файл", fileData);
 
     if (Object.keys(req.body).length === 0 || !fileData) {
         for (let i = 0; i < fileData.length; i++) {
